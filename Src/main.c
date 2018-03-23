@@ -60,7 +60,8 @@ static void MX_I2C1_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+HAL_StatusTypeDef writeEepromByte(uint32_t address, uint8_t data);
+uint8_t readEepromByte(uint32_t address/*, uint8_t* data*/);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -71,7 +72,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  uint8_t byte;
+  char display[30];
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -101,6 +103,15 @@ int main(void)
   ra6963ClearGraphic();
   ra6963ClearText();
   ra6963ClearCG();
+
+  //writeEepromByte(0, 13);
+  byte = readEepromByte(0);
+  sprintf(display, "%d", byte);
+  ssd1306_WriteString(display, 1);
+  updateScreen();
+
+  ra6963TextGoTo(0, 0);
+  ra6963WriteString(display);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -266,7 +277,24 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+HAL_StatusTypeDef writeEepromByte(uint32_t address, uint8_t data)
+{
+	HAL_StatusTypeDef status;
+	address = address + 0x08080000;
+	HAL_FLASHEx_DATAEEPROM_Unlock();
+	status = HAL_FLASHEx_DATAEEPROM_Program(TYPEPROGRAMDATA_BYTE, address, data);
+	HAL_FLASHEx_DATAEEPROM_Lock();
+	return status;
+}
 
+uint8_t readEepromByte(uint32_t address/*, uint8_t* data*/)
+{
+	HAL_StatusTypeDef status = HAL_OK;
+	uint8_t tmp = 0;
+	address = address + 0x08080000;
+	tmp/**data*/ = *(__IO uint32_t*)address;
+	return tmp;
+}
 /* USER CODE END 4 */
 
 /**
