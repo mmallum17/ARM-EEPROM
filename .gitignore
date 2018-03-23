@@ -1,0 +1,10 @@
+.cproject
+.mxproject
+.project
+.settings
+eeprom.elf.launch
+eeporm.ioc
+mx.scratch
+STM32L152RE_FLASH.ld
+startup
+Debug
